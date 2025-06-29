@@ -5,6 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>ホワイティ帝国10連ガチャ</title>
         <style>
+            body {
+                font-size: 16 px; /* または 16px 程度 */
+                line-height: 1.6;
+            }
             @keyframes sparkle {
                 0%, 100% { opacity: 1; }
                 50% { opacity: 0.5; }
@@ -144,7 +148,7 @@
                         //ultra-rareの後にも✨✨✨✨✨✨を挿入
                         if (item.rarity === "ultra-rare" || item.rarity === "super-super-rare") {
                             const sparkleAfter = document.createElement("p");
-                            sparkleAfter.textContent = "✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨";
+                            sparkleAfter.textContent = "✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨";
                             sparkleAfter.classList.add("sparkle-banner");
                             resultArea.appendChild(sparkleAfter);
                         }
