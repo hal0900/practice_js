@@ -14,12 +14,33 @@ function runFortuneGame() {
 
     }
 
-    //運勢の候補
-    let fortunes = ["大ホワイティ", "中ホワイティ", "小ホワイティ", "ホワイティ", "末ホワイティ", "はらぱん"];
+    //重み付き運勢の候補
+    const fortunes = [
+        "はらぱん", //とても出にくい
+        "大ホワイティ", "大ホワイティ",  //出にくい
+        "末ホワイティ", "末ホワイティ", "末ホワイティ", //やや出にくい
+        "中ホワイティ", "中ホワイティ", "中ホワイティ", "中ホワイティ",  // やや出やすい
+        "小ホワイティ", "小ホワイティ", "小ホワイティ", "小ホワイティ", "小ホワイティ",  // 出やすい
+        "ホワイティ", "ホワイティ", "ホワイティ", "ホワイティ", "ホワイティ", "ホワイティ" // 出やすい
+    ];
 
-    //ランダムに1つ選ぶ
-    let randomIndex = Math.floor(Math.random() * fortunes.length);
-    let result = fortunes[randomIndex];
+    //名前と日付に応じた一定の数値を取得
+    function getTodaySeed(userName) {
+        const today = new Date().toDateString();
+        let combined = userName + today;
+        let hash = 0;
+
+        for (let i = 0; i < combined.length; i++) {
+            hash = (hash * 31 + combined.charCodeAt(i)) % 1000000;
+        }
+
+        return hash;
+    }
+
+    //決定的に選ぶ
+    const seed = getTodaySeed(userName);
+    const index = seed % fortunes.length;
+    const result = fortunes[index];
 
     //結果ごとにメッセージを表示する
     let message = "";
