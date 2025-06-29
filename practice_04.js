@@ -51,6 +51,3 @@ function runFortuneGame() {
     //結果表示
     alert(userName + "さんの今日の運勢は…「" + result + "」です。\n" + message);
 }
-
-//ゲーム開始
-runFortuneGame();
