@@ -5,9 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>ホワイティ帝国10連ガチャ</title>
         <style>
+            h1 {
+                text-align: center;
+            }
             body {
-                font-size: 16 px; /* または 16px 程度 */
+                font-size: 16px; /* または 16px 程度 */
                 line-height: 1.6;
+                text-align: center;
             }
             @keyframes sparkle {
                 0%, 100% { opacity: 1; }
@@ -48,13 +52,32 @@
             .normal {
                 color: black;
             }
+            #gachaButton {
+                padding: 1em 2em;        /* 上下・左右の余白 */
+                font-size: 1.5rem;       /* 文字サイズ */
+                font-weight: bold;       /* 太字 */
+                border-radius: 8px;      /* 角丸 */
+                background-color: #4CAF50; /* 背景色（緑系） */
+                color: white;            /* 文字色 */
+                border: none;            /* 枠線なし */
+                cursor: pointer;         /* ポインター表示 */
+                transition: background-color 0.3s ease;
+            }
+            #gachaButton:hover {
+                background-color: #45a049; /* ホバー時の色 */
+            }
+            .button-wrapper {
+                margin: 1em;
+            }
         </style>
     </head>
     <body>
 
         <h1>ホワイティ帝国10連ガチャ</h1>
 
-        <button type="button" onclick="runGacha()">ガチャをまわす！</button>
+        <div class="button-wrapper">
+            <button type="button" id="gachaButton" onclick="runGacha()">ガチャをまわす！</button>
+        </div>
 
         <div id="results" class="result-area"></div>
 
@@ -98,6 +121,9 @@
 
             // 10連ガチャを実行
             function runGacha() {
+                const button = document.getElementById("gachaButton");
+                button.disabled = true;
+
                 const resultArea = document.getElementById("results");
                 resultArea.innerHTML = ""; // 前回の結果を消す
 
@@ -121,17 +147,27 @@
                 // 最後の1回：高レア確定
                 results.push(drawItem(highRarityTable));
 
-                // 1行ずつ順に表示（300msずつ遅らせる）
+                // 表示遅延を管理
+                let currentDelay = 0;
+
+                // 1行ずつ順に表示
                 results.forEach((item, i) => {
+                    const isHighRarity = item.rarity === "ultra-rare" || item.rarity === "super-super-rare";
+
                     setTimeout(() => {
                         // 高レアリティの出現の前に確定演出を挿入
-                        if (item.rarity === "ultra-rare" || item.rarity === "super-super-rare") {
+                        if (isHighRarity) {
                             const sparkleBefore = document.createElement("p");
                             sparkleBefore.textContent = "✨✨✨ ！！！高レア登場！！！ ✨✨✨";
                             sparkleBefore.classList.add("sparkle-banner");
                             resultArea.appendChild(sparkleBefore);
                         }
+                    }, currentDelay);
 
+                    // 演出後の追加表示（高レアのみ追加で待つ）
+                    const displayItemDelay = currentDelay + (isHighRarity ? 500 : 0);
+
+                    setTimeout(() => {
                         const p = document.createElement("p");
                         const shortRarity = rarityShortMap[item.rarity] || "??";
                         if (item.rarity === "ultra-rare") {
@@ -143,17 +179,24 @@
                         p.classList.add(item.rarity);
                         //ガチャ結果を表示
                         resultArea.appendChild(p);
-                    
 
                         //ultra-rareの後にも✨✨✨✨✨✨を挿入
-                        if (item.rarity === "ultra-rare" || item.rarity === "super-super-rare") {
+                        if (isHighRarity) {
                             const sparkleAfter = document.createElement("p");
                             sparkleAfter.textContent = "✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨";
                             sparkleAfter.classList.add("sparkle-banner");
                             resultArea.appendChild(sparkleAfter);
                         }
-                    }, i * 300); // 0ms, 300ms, 600ms, ...
+                    }, displayItemDelay);
+
+                    // 次の表示までの時間を加算（通常表示300ms + 高レアはさらに500ms）
+                    currentDelay = displayItemDelay + 300;
                 });
+
+                // 全ての表示が終わったあとにボタンを有効化
+                setTimeout(() => {
+                    button.disabled = false;
+                }, currentDelay);
             }
         </script>
 
