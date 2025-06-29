@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>ホワイティ帝国10連ガチャ</title>
+        <style>
+            @keyframes sparkle {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+
+            .sparkle-banner {
+                font-weight: bold;
+                color: orangered;
+                font-size: large;
+                animation: sparkle 1s infinite;
+            }
+
+            .result-area {
+                margin-top: 1em;
+                font-family: sans-serif;
+            }
+            .rare {
+                color: royalblue;
+                font-weight: bold;
+            }
+            .super-rare {
+                color: darkorange;
+                font-weight: bold;
+                text-decoration: underline;
+            }
+            .super-super-rare {
+                color: goldenrod;
+                font-weight: bold;
+                text-decoration: underline;
+            }
+            .ultra-rare {
+                color: red;
+                font-size: large;
+                font-weight: bold;
+                text-decoration: underline;
+            }
+            .normal {
+                color: black;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h1>ホワイティ帝国10連ガチャ</h1>
+
+        <button type="button" onclick="runGacha()">ガチャをまわす！</button>
+
+        <div id="results" class="result-area"></div>
+
+        <script>
+            // ガシャの要素一覧
+            const gachaItems = [
+                { name: "海苔", rarity: "normal", weight: 50 },
+                { name: "君は彼方", rarity: "normal", weight: 50 },
+                { name: "586さん", rarity: "rare", weight: 30} ,
+                { name: "586さん〔Dクラス職員〕", rarity: "rare", weight: 30 },
+                { name: "586さん（水着ver）", rarity: "super-rare", weight: 15 },
+                { name: "ゴーストトリックやりなよ", rarity: "super-super-rare", weight: 5 },
+                { name: "与謝野晶子", rarity: "ultra-rare", weight: 1 }
+            ];
+
+            // レアリティの略称を作成
+            const rarityShortMap = {
+                "normal": "N",
+                "rare": "R",
+                "super-rare": "SR",
+                "super-super-rare": "SSR",
+                "ultra-rare": "UR"
+            };
+
+            // 抽選用の累積テーブルを作る関数
+            function buildWeightedTable(items) {
+                let table = [];
+                items.forEach(item => {
+                    for (let i = 0; i < item.weight; i++) {
+                        table.push(item);
+                    }
+                });
+                return table
+            }
+
+            // 重み付きで1つ抽選
+            function drawItem(weightedTable) {
+                const index = Math.floor(Math.random() * weightedTable.length);
+                return weightedTable[index];
+            }
+
+            // 10連ガチャを実行
+            function runGacha() {
+                const resultArea = document.getElementById("results");
+                resultArea.innerHTML = ""; // 前回の結果を消す
+
+                const table = buildWeightedTable(gachaItems);
+
+                // 確定枠用：高レアだけのテーブルを作成
+                const highRarityItems = gachaItems.filter(item =>
+                    item.rarity === "super-rare" ||
+                    item.rarity === "super-super-rare" ||
+                    item.rarity === "ultra-rare"
+                );
+                const highRarityTable = buildWeightedTable(highRarityItems);
+
+                const results = [];
+
+                // 最初の9回：通常抽選
+                for (let i = 0; i < 9; i++) {
+                    results.push(drawItem(table));
+                }
+
+                // 最後の1回：高レア確定
+                results.push(drawItem(highRarityTable));
+
+                // 1行ずつ順に表示（300msずつ遅らせる）
+                results.forEach((item, i) => {
+                    setTimeout(() => {
+                        // 高レアリティの出現の前に確定演出を挿入
+                        if (item.rarity === "ultra-rare" || item.rarity === "super-super-rare") {
+                            const sparkleBefore = document.createElement("p");
+                            sparkleBefore.textContent = "✨✨✨ ！！！高レア登場！！！ ✨✨✨";
+                            sparkleBefore.classList.add("sparkle-banner");
+                            resultArea.appendChild(sparkleBefore);
+                        }
+
+                        const p = document.createElement("p");
+                        const shortRarity = rarityShortMap[item.rarity] || "??";
+                        if (item.rarity === "ultra-rare") {
+                            p.textContent = `【${shortRarity}】✨✨${item.name}✨✨`;
+                        } else {
+                            p.textContent = `【${shortRarity}】${item.name}`;
+                        }
+                        //rarityに応じてスタイルを付与
+                        p.classList.add(item.rarity);
+                        //ガチャ結果を表示
+                        resultArea.appendChild(p);
+                    
+
+                        //ultra-rareの後にも✨✨✨✨✨✨を挿入
+                        if (item.rarity === "ultra-rare" || item.rarity === "super-super-rare") {
+                            const sparkleAfter = document.createElement("p");
+                            sparkleAfter.textContent = "✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨";
+                            sparkleAfter.classList.add("sparkle-banner");
+                            resultArea.appendChild(sparkleAfter);
+                        }
+                    }, i * 300); // 0ms, 300ms, 600ms, ...
+                });
+            }
+        </script>
+
+        <a href="index.html">戻る</a><br>
+
+    </body>
+</html>
