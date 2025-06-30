@@ -9,6 +9,7 @@
                 text-align: center;
             }
             body {
+                padding: 0 1em;
                 font-size: 16px; /* または 16px 程度 */
                 line-height: 1.6;
                 text-align: center;
@@ -51,23 +52,35 @@
             }
             .normal {
                 color: black;
+                font-weight: bold;
+            }
+            .nori-rare {
+                color: black;
             }
             #gachaButton {
+                width: 300px;
                 padding: 1em 2em;        /* 上下・左右の余白 */
                 font-size: 1.5rem;       /* 文字サイズ */
                 font-weight: bold;       /* 太字 */
                 border-radius: 8px;      /* 角丸 */
-                background-color: #4CAF50; /* 背景色（緑系） */
+                background-color: #4CAF50; /* アクティブ時の背景色（緑系） */
                 color: white;            /* 文字色 */
                 border: none;            /* 枠線なし */
                 cursor: pointer;         /* ポインター表示 */
-                transition: background-color 0.3s ease;
+                transition: background-color 0.4s ease, color 0.4s ease;
+                max-width: 90vw;    /* モバイルで画面をはみ出さない */
+                text-align: center;
             }
             #gachaButton:hover {
                 background-color: #45a049; /* ホバー時の色 */
             }
             .button-wrapper {
                 margin: 1em;
+            }
+            #gachaButton.disabled-button {
+                background-color: #ccc !important;
+                color: #666 !important;
+                cursor: not-allowed !important;
             }
         </style>
     </head>
@@ -76,131 +89,17 @@
         <h1>ホワイティ帝国10連ガチャ</h1>
 
         <div class="button-wrapper">
-            <button type="button" id="gachaButton" onclick="runGacha()">ガチャをまわす！</button>
+            <button type="button" id="gachaButton" class="disabled-button" onclick="runGacha()" disabled>読み込み中...</button>
         </div>
 
         <div id="results" class="result-area"></div>
 
-        <script>
-            // ガシャの要素一覧
-            const gachaItems = [
-                { name: "海苔", rarity: "normal", weight: 50 },
-                { name: "君は彼方", rarity: "normal", weight: 50 },
-                { name: "586さん", rarity: "rare", weight: 30} ,
-                { name: "586さん〔Dクラス職員〕", rarity: "rare", weight: 30 },
-                { name: "586さん（水着ver）", rarity: "super-rare", weight: 15 },
-                { name: "ゴーストトリックやりなよ", rarity: "super-super-rare", weight: 5 },
-                { name: "与謝野晶子", rarity: "ultra-rare", weight: 1 }
-            ];
+        <div style="margin-top: 2em;">
+            <a href="index.html">戻る</a><br>
+        </div>
 
-            // レアリティの略称を作成
-            const rarityShortMap = {
-                "normal": "N",
-                "rare": "R",
-                "super-rare": "SR",
-                "super-super-rare": "SSR",
-                "ultra-rare": "UR"
-            };
-
-            // 抽選用の累積テーブルを作る関数
-            function buildWeightedTable(items) {
-                let table = [];
-                items.forEach(item => {
-                    for (let i = 0; i < item.weight; i++) {
-                        table.push(item);
-                    }
-                });
-                return table
-            }
-
-            // 重み付きで1つ抽選
-            function drawItem(weightedTable) {
-                const index = Math.floor(Math.random() * weightedTable.length);
-                return weightedTable[index];
-            }
-
-            // 10連ガチャを実行
-            function runGacha() {
-                const button = document.getElementById("gachaButton");
-                button.disabled = true;
-
-                const resultArea = document.getElementById("results");
-                resultArea.innerHTML = ""; // 前回の結果を消す
-
-                const table = buildWeightedTable(gachaItems);
-
-                // 確定枠用：高レアだけのテーブルを作成
-                const highRarityItems = gachaItems.filter(item =>
-                    item.rarity === "super-rare" ||
-                    item.rarity === "super-super-rare" ||
-                    item.rarity === "ultra-rare"
-                );
-                const highRarityTable = buildWeightedTable(highRarityItems);
-
-                const results = [];
-
-                // 最初の9回：通常抽選
-                for (let i = 0; i < 9; i++) {
-                    results.push(drawItem(table));
-                }
-
-                // 最後の1回：高レア確定
-                results.push(drawItem(highRarityTable));
-
-                // 表示遅延を管理
-                let currentDelay = 0;
-
-                // 1行ずつ順に表示
-                results.forEach((item, i) => {
-                    const isHighRarity = item.rarity === "ultra-rare" || item.rarity === "super-super-rare";
-
-                    setTimeout(() => {
-                        // 高レアリティの出現の前に確定演出を挿入
-                        if (isHighRarity) {
-                            const sparkleBefore = document.createElement("p");
-                            sparkleBefore.textContent = "✨✨✨ ！！！高レア登場！！！ ✨✨✨";
-                            sparkleBefore.classList.add("sparkle-banner");
-                            resultArea.appendChild(sparkleBefore);
-                        }
-                    }, currentDelay);
-
-                    // 演出後の追加表示（高レアのみ追加で待つ）
-                    const displayItemDelay = currentDelay + (isHighRarity ? 500 : 0);
-
-                    setTimeout(() => {
-                        const p = document.createElement("p");
-                        const shortRarity = rarityShortMap[item.rarity] || "??";
-                        if (item.rarity === "ultra-rare") {
-                            p.textContent = `【${shortRarity}】✨✨${item.name}✨✨`;
-                        } else {
-                            p.textContent = `【${shortRarity}】${item.name}`;
-                        }
-                        //rarityに応じてスタイルを付与
-                        p.classList.add(item.rarity);
-                        //ガチャ結果を表示
-                        resultArea.appendChild(p);
-
-                        //ultra-rareの後にも✨✨✨✨✨✨を挿入
-                        if (isHighRarity) {
-                            const sparkleAfter = document.createElement("p");
-                            sparkleAfter.textContent = "✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨";
-                            sparkleAfter.classList.add("sparkle-banner");
-                            resultArea.appendChild(sparkleAfter);
-                        }
-                    }, displayItemDelay);
-
-                    // 次の表示までの時間を加算（通常表示300ms + 高レアはさらに500ms）
-                    currentDelay = displayItemDelay + 300;
-                });
-
-                // 全ての表示が終わったあとにボタンを有効化
-                setTimeout(() => {
-                    button.disabled = false;
-                }, currentDelay);
-            }
-        </script>
-
-        <a href="index.html">戻る</a><br>
+        <!-- ガチャのJavaScriptを読み込み -->
+        <script src="whity_gacha.js" defer></script>
 
     </body>
 </html>
