@@ -154,3 +154,33 @@ function runGacha() {
 
 //ガチャを読み込み
 loadGachaData();
+
+function showRarityRates() {
+    if (!gachaItems || gachaItems.length === 0) {
+        alert("ガチャデータが読み込まれていません。");
+        return;
+    }
+
+    //各レアリティの合計重みを計算
+    const rarityWeightMap = {};
+    let totalWeight = 0;
+
+    gachaItems.forEach(item => {
+        if (!rarityWeightMap[item.rarity]) {
+            rarityWeightMap[item.rarity] = 0;
+        }
+        rarityWeightMap[item.rarity] += item.weight;
+        totalWeight += item.weight;
+    });
+
+    //表示用文字列を作成（降順ソート）
+    const lines = Object.entries(rarityWeightMap)
+        .sort((a, b) => b[1] - a[1])
+        .map(([rarity, weight]) => {
+            const percent = (weight / totalWeight * 100).toFixed(2);
+            const short = rarityShortMap[rarity] || rarity;
+            return `【${short}】${rarity}: ${percent}%`;
+        });
+
+    alert("レアリティごとの排出：\n\n" + lines.join("\n"));
+}
