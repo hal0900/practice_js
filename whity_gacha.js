@@ -149,7 +149,12 @@ function runGacha() {
         button.disabled = false;
         button.classList.remove("disabled-button");
         button.textContent = "ガチャをまわす！";
+
+    //ガチャ表示後にボタンを表示
+    document.getElementById("actions").style.display = "block";
+
     }, currentDelay);
+
 }
 
 //ガチャを読み込み
@@ -183,4 +188,51 @@ function showRarityRates() {
         });
 
     alert("レアリティごとの排出：\n\n" + lines.join("\n"));
+}
+
+//結果を画像として保存（html2canvas必須）
+function downloadResultAsImage() {
+    const resultArea = document.getElementById("results");
+
+    // クラスを追加（画像用スタイル）
+    resultArea.classList.add("results-for-image");
+
+    // CSS反映待ち（100ms程度）
+    setTimeout(() => {
+
+        html2canvas(resultArea).then(canvas => {
+            const link = document.createElement("a");
+
+            // 日付と時刻の取得
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+
+            const timestamp = `${yyyy}-${mm}-${dd}_${hh}${min}${ss}`;
+
+            link.download = `gacha_result_${timestamp}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+
+            //クラスを外す（元の状態に戻す）
+            resultArea.classList.remove("results-for-image");
+
+        });
+
+    }, 100);
+}
+
+//結果をテキストでコピー（Clipboard API）
+function copyResultAsText() {
+    const resultArea = document.getElementById("results");
+    const lines = Array.from(resultArea.querySelectorAll("p")).map(p => p.textContent);
+    const text = `ホワイティ帝国10連ガチャの結果\n\n` + lines.join("\n") + "\n\n#ホワイティ帝国 #ホワイ帝10連";
+
+    navigator.clipboard.writeText(text)
+        .then(() => alert("結果をコピーしました！SNSで貼り付けてみよう！"))
+        .catch(err => alert("コピーに失敗しました：" + err));
 }

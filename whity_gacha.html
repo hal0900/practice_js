@@ -4,6 +4,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>ホワイティ帝国10連ガチャ</title>
+        <!-- CDN読み込み（headの中など） -->
+        <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
         <style>
             h1 {
                 text-align: center;
@@ -81,6 +83,18 @@
                 color: #666 !important;
                 cursor: not-allowed !important;
             }
+            .results-for-image {
+                width: 480px;
+                max-width: 90vw;
+                background-color: white;
+                margin: 0 auto;
+                padding: 1em;
+                border: 30px solid orange;
+                border-radius: 18px;
+            }
+            .results-for-image * {
+                font-size: 18px;
+            }
         </style>
     </head>
     <body>
@@ -94,6 +108,11 @@
         </div>
 
         <div id="results" class="result-area"></div>
+
+        <div id="actions" style="display: none; margin-top: 1em;">
+            <button onclick="downloadResultAsImage()">画像として保存</button>
+            <button onclick="copyResultAsText()">結果をコピー</button>
+        </div>
 
         <div style="margin-top: 2em;">
             <a href="index.html">戻る</a><br>
