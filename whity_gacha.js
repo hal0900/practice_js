@@ -14,6 +14,7 @@ function flattenGroupedData(data) {
 
 //ガチャのデータを読み込む
 let gachaItems = [];
+let gachaWeights = {};
 
 async function loadGachaData() {
     const button = document.getElementById("gachaButton");
@@ -24,6 +25,7 @@ async function loadGachaData() {
             throw new Error("ネットワークエラー");
         }
         const rawData = await response.json();
+        gachaWeights = rawData.weights;
         gachaItems = flattenGroupedData(rawData);
 
         //読み込み成功：ボタンを有効化
@@ -160,35 +162,35 @@ function runGacha() {
 //ガチャを読み込み
 loadGachaData();
 
-function showRarityRates() {
-    if (!gachaItems || gachaItems.length === 0) {
-        alert("ガチャデータが読み込まれていません。");
+// 改良版：排出率を表示する
+function showRarityRates(weights) {
+    if (!weights || Object.keys(weights).length === 0) {
+        alert("排出率データがありません。");
         return;
     }
 
-    //各レアリティの合計重みを計算
-    const rarityWeightMap = {};
-    let totalWeight = 0;
+    const rarityOrder = [
+        "normal",
+        "rare",
+        "super-rare",
+        "super-super-rare",
+        "ultra-rare",
+        "nori-rare"
+    ];
 
-    gachaItems.forEach(item => {
-        if (!rarityWeightMap[item.rarity]) {
-            rarityWeightMap[item.rarity] = 0;
-        }
-        rarityWeightMap[item.rarity] += item.weight;
-        totalWeight += item.weight;
-    });
+    const total = Object.values(weights).reduce((sum, val) => sum + val, 0);
 
-    //表示用文字列を作成（降順ソート）
-    const lines = Object.entries(rarityWeightMap)
-        .sort((a, b) => b[1] - a[1])
-        .map(([rarity, weight]) => {
-            const percent = (weight / totalWeight * 100).toFixed(2);
+    const lines = rarityOrder
+        .filter(rarity => weights[rarity] !== undefined)
+        .map(rarity => {
+            const percent = (weights[rarity] / total * 100).toFixed(2);
             const short = rarityShortMap[rarity] || rarity;
-            return `【${short}】${rarity}: ${percent}%`;
+            return `【${short}】${percent}%`;
         });
 
-    alert("レアリティごとの排出：\n\n" + lines.join("\n"));
+    alert("レアリティごとの排出率：\n\n" + lines.join("\n"));
 }
+
 
 //結果を画像として保存（html2canvas必須）
 function downloadResultAsImage() {
