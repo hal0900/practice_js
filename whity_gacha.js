@@ -198,7 +198,7 @@ function showRarityRates(weights) {
         .map(rarity => {
             const percent = (weights[rarity] / total * 100).toFixed(2);
             const short = rarityShortMap[rarity] || rarity;
-            return `【${short}】${percent}%`;
+            return `【${short}】${rarity}: ${percent}%`;
         });
 
     alert("レアリティごとの排出率：\n\n" + lines.join("\n"));
