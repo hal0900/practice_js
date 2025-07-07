@@ -1,11 +1,11 @@
 {
     "weights": {
-        "nori-rare": 2075,
-        "normal": 4000,
-        "rare": 2400,
-        "super-rare":1000,
-        "super-super-rare": 500,
-        "ultra-rare": 25
+        "nori-rare": 50,
+        "normal": 500,
+        "rare": 250,
+        "super-rare": 150,
+        "super-super-rare": 45,
+        "ultra-rare": 5
     },
     "items": {
         "nori-rare": ["海苔", "妖怪 Lv.5", "君は彼方"],

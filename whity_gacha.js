@@ -3,9 +3,12 @@ function flattenGroupedData(data) {
     const result = [];
 
     for (const rarity in data.items) {
-        const weight = data.weights[rarity] ?? 1; // 未定義ならデフォルト1
-        data.items[rarity].forEach(name => {
-            result.push({ name, rarity, weight });
+        const items = data.items[rarity];
+        const totalWeight = data.weights[rarity] ?? 1; // 未定義ならデフォルト1
+        const perItemWeight = totalWeight / items.length; // 各アイテムに均等割り当て
+
+        items.forEach(name => {
+            result.push({ name, rarity, weight: perItemWeight });
         });
     }
 
@@ -51,20 +54,30 @@ const rarityShortMap = {
 };
 
 // 抽選用の累積テーブルを作る関数
-function buildWeightedTable(items) {
+function buildCumulativeTable(items) {
     let table = [];
-    items.forEach(item => {
-        for (let i = 0; i < item.weight; i++) {
-            table.push(item);
-        }
-    });
-    return table
+    let cumulative = 0;
+
+    for ( const item of items) {
+        cumulative += item.weight;
+        table.push({ item, cumulative});
+    }
+
+    return { table, total: cumulative };
 }
 
 // 重み付きで1つ抽選
-function drawItem(weightedTable) {
-    const index = Math.floor(Math.random() * weightedTable.length);
-    return weightedTable[index];
+function drawItem(cumulativeTable) {
+    const rand = Math.random() * cumulativeTable.total;
+
+    for (const entry of cumulativeTable.table) {
+        if (rand < entry.cumulative) {
+            return entry.item;
+        }
+    }
+    
+    // 念のため（理論上ここには来ない）
+    return cumulativeTable.table[cumulativeTable.table.length - 1].item;
 }
 
 // 10連ガチャを実行
@@ -75,7 +88,7 @@ function runGacha() {
     const resultArea = document.getElementById("results");
     resultArea.innerHTML = ""; // 前回の結果を消す
 
-    const table = buildWeightedTable(gachaItems);
+    const normalTable = buildCumulativeTable(gachaItems);
 
     // 確定枠用：高レアだけのテーブルを作成
     const highRarityItems = gachaItems.filter(item =>
@@ -83,13 +96,13 @@ function runGacha() {
         item.rarity === "super-super-rare" ||
         item.rarity === "ultra-rare"
     );
-    const highRarityTable = buildWeightedTable(highRarityItems);
+    const highRarityTable = buildCumulativeTable(highRarityItems);
 
     const results = [];
 
     // 最初の9回：通常抽選
     for (let i = 0; i < 9; i++) {
-        results.push(drawItem(table));
+        results.push(drawItem(normalTable));
     }
 
     // 最後の1回：高レア確定
