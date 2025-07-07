@@ -4,12 +4,15 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>ホワイティ帝国10連ガチャ</title>
-        <link href="https://fonts.googleapis.com/css?family=M+PLUS+1p:400,500" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=M+PLUS+1p:200,400,500,700,900" rel="stylesheet">
         <!-- CDN読み込み（headの中など） -->
         <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
         <style>
             h1 {
+                font-family: 'M PLUS 1p', sans-serif;
                 text-align: center;
+                font-weight: 900;
+                font-size: clamp(1.5rem, 2vw, 3rem);
             }
             body {
                 font-size: 16px; /* または 16px 程度 */
@@ -35,36 +38,37 @@
             }
             .rare {
                 color: royalblue;
-                font-weight: bold;
+                font-weight: 500;
             }
             .super-rare {
                 color: darkorange;
-                font-weight: bold;
+                font-weight: 500;
                 text-decoration: underline;
             }
             .super-super-rare {
                 color: goldenrod;
-                font-weight: bold;
+                font-weight: 700;
                 text-decoration: underline;
             }
             .ultra-rare {
                 color: red;
                 font-size: large;
-                font-weight: bold;
+                font-weight: 900;
                 text-decoration: underline;
             }
             .normal {
                 color: black;
-                font-weight: bold;
+                font-weight: 400;
             }
             .nori-rare {
                 color: black;
+                font-weight: 200;
             }
             #gachaButton {
                 width: 300px;
-                padding: 1em 2em;        /* 上下・左右の余白 */
-                font-size: 1.5rem;       /* 文字サイズ */
-                font-weight: bold;       /* 太字 */
+                padding: 1em;        /* 上下・左右の余白 */
+                font-size: clamp(1.5rem, 1vw, 3rem);       /* 文字サイズ */
+                font-weight: 900;
                 font-family: 'M PLUS 1p', sans-serif;
                 border-radius: 8px;      /* 角丸 */
                 background-color: #4CAF50; /* アクティブ時の背景色（緑系） */
